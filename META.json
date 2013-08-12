@@ -1,0 +1,55 @@
+{
+   "abstract" : "The addition of topological sorting to DBIx::Class",
+   "author" : [
+      "unknown"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.4005, CPAN::Meta::Converter version 2.131560",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "DBIx-Class-TopoSort",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "File::Path" : "0.01",
+            "File::Temp" : "0.01",
+            "Pod::Usage" : "1.3",
+            "Test::Deep" : "0.095",
+            "Test::Exception" : "0.21",
+            "Test::More" : "0.88",
+            "Test::Warn" : "0.08"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.40"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "perl" : "5.008_004"
+         }
+      }
+   },
+   "provides" : {
+      "DBIx::Class::TopoSort" : {
+         "file" : "lib/DBIx/Class/TopoSort.pm",
+         "version" : "0.01"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ],
+      "repository" : {
+         "url" : "https://github.com/robkinyon/dbix-class-toposort"
+      }
+   },
+   "version" : "0"
+}
