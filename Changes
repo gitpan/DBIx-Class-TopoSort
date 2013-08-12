@@ -1,4 +1,7 @@
 Revision history for DBIx::Class::TopoSort (ordered by revision number).
 
-0.001 Aug 10 2013 13:00:00 PDT
+0.02 Aug 12 2013 14:00:00 PDT
+    - Fixed Makefile.PL requirements
+
+0.01 Aug 10 2013 13:00:00 PDT
     - Initial version

@@ -1,10 +1,11 @@
-use 5.006;
+use 5.008_004;
 use inc::Module::Install 0.91;
 use strict;
 use warnings FATAL => 'all';
  
-perl_version '5.006';
+perl_version '5.008_004';
 all_from 'lib/DBIx/Class/TopoSort.pm';
+requires 'DBIx::Class';
 requires 'Graph';
  
 test_requires 'Test::Exception'   => '0.21',
