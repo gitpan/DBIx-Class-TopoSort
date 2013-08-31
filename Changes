@@ -1,5 +1,8 @@
 Revision history for DBIx::Class::TopoSort (ordered by revision number).
 
+0.03 Aug 31 2013 07:30:00 PDT
+    - Fixed commas in Makefile.PL (Thanks, ANDK!)
+
 0.02 Aug 12 2013 14:00:00 PDT
     - Fixed Makefile.PL requirements
 

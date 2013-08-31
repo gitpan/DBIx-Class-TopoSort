@@ -5,7 +5,7 @@ use 5.008_004;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Graph;
 
@@ -128,6 +128,14 @@ names.
 =head1 SEE ALSO
 
 L<Graph/toposort>
+
+=head1 AUTHOR
+
+=over 4
+
+=item * Rob Kinyon <rob.kinyon@gmail.com>
+
+=back
 
 =head1 LICENSE
 
