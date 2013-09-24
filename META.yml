@@ -1,31 +1,33 @@
 ---
 abstract: 'The addition of topological sorting to DBIx::Class'
 author:
-  - unknown
+  - '=over 4'
 build_requires:
-  File::Path: 0.01
-  File::Temp: 0.01
-  Pod::Usage: 1.3
-  Test::Deep: 0.095
+  ExtUtils::MakeMaker: 6.59
+  List::MoreUtils: 0.01
+  Test::DBIx::Class: 0.01
+  Test::Deep: 0.01
   Test::Exception: 0.21
   Test::More: 0.88
-  Test::Warn: 0.08
 configure_requires:
-  Module::Build: 0.40
+  ExtUtils::MakeMaker: 6.59
+distribution_type: module
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4005, CPAN::Meta::Converter version 2.131560'
+generated_by: 'Module::Install version 1.06'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
+module_name: DBIx::Class::TopoSort
 name: DBIx-Class-TopoSort
-provides:
-  DBIx::Class::TopoSort:
-    file: lib/DBIx/Class/TopoSort.pm
-    version: 0.01
+no_index:
+  directory:
+    - inc
+    - t
 requires:
-  perl: 5.008_004
+  DBIx::Class: 0
+  Graph: 0
+  perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-  repository: https://github.com/robkinyon/dbix-class-toposort
-version: 0
+version: 0.04
