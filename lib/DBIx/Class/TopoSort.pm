@@ -5,45 +5,60 @@ use 5.008_004;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.04';
+our $VERSION = '0.0400001';
 
 use Graph;
 
 sub toposort_graph {
-    my $self = shift;
-    my (%opts) = @_;
+  my $self = shift;
+  my (%opts) = @_;
 
-    my $g = Graph->new;
+  my $g = Graph->new;
 
-    my @source_names = $self->sources;
+  my @source_names = $self->sources;
 
-    my %table_source = map { 
-        $self->source($_)->name => $_
-    } @source_names;
+  my %table_source = map { 
+    $self->source($_)->name => $_
+  } @source_names;
 
-    foreach my $name ( @source_names ) {
-        my $source = $self->source($name);
-        $g->add_vertex($name);
+  foreach my $name ( @source_names ) {
+    my $source = $self->source($name);
+    $g->add_vertex($name);
 
-        foreach my $rel_name ( $source->relationships ) {
-            next if grep { $_ eq $rel_name } @{$opts{skip}{$name}};
-            my $rel_info = $source->relationship_info($rel_name);
+    foreach my $rel_name ( $source->relationships ) {
+      next if grep { $_ eq $rel_name } @{$opts{skip}{$name}};
+      my $rel_info = $source->relationship_info($rel_name);
 
-            if ( $rel_info->{attrs}{is_foreign_key_constraint} ) {
-                $g->add_edge(
-                    $table_source{$self->source($rel_info->{source})->name},
-                    $name,
-                );
-            }
-        }
+      if ( $rel_info->{attrs}{is_foreign_key_constraint} ) {
+        $g->add_edge(
+          $table_source{$self->source($rel_info->{source})->name},
+          $name,
+        );
+      }
     }
+  }
 
-    return $g;
+  return $g;
 }
 
 sub toposort {
-    my $self = shift;
-    return $self->toposort_graph(@_)->toposort();
+  my $self = shift;
+
+  my ($g, @rv);
+  eval {
+    $g = $self->toposort_graph(@_);
+    @rv = $g->toposort();
+  }; if ($@) {
+    if ($g) {
+      my @c = $g->find_a_cycle;
+      if (@c) {
+        warn "Cycle found: '" . join("' -> '", @c) . "'\n";
+      }
+    }
+    die $@;
+  }
+
+  return @rv;
 }
 
 1;
