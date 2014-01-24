@@ -1,28 +1,29 @@
 package DBIx::Class::TopoSort;
+#vi:sw=2
 
 use 5.008_004;
 
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.0400001';
+our $VERSION = '0.050000';
 
 use Graph;
 
 sub toposort_graph {
   my $self = shift;
-  my (%opts) = @_;
+  my ($schema, %opts) = ref($self) ? ($self, @_) : @_;
 
   my $g = Graph->new;
 
-  my @source_names = $self->sources;
+  my @source_names = $schema->sources;
 
   my %table_source = map { 
-    $self->source($_)->name => $_
+    $schema->source($_)->name => $_
   } @source_names;
 
   foreach my $name ( @source_names ) {
-    my $source = $self->source($name);
+    my $source = $schema->source($name);
     $g->add_vertex($name);
 
     foreach my $rel_name ( $source->relationships ) {
@@ -31,7 +32,7 @@ sub toposort_graph {
 
       if ( $rel_info->{attrs}{is_foreign_key_constraint} ) {
         $g->add_edge(
-          $table_source{$self->source($rel_info->{source})->name},
+          $table_source{$schema->source($rel_info->{source})->name},
           $name,
         );
       }
@@ -43,22 +44,7 @@ sub toposort_graph {
 
 sub toposort {
   my $self = shift;
-
-  my ($g, @rv);
-  eval {
-    $g = $self->toposort_graph(@_);
-    @rv = $g->toposort();
-  }; if ($@) {
-    if ($g) {
-      my @c = $g->find_a_cycle;
-      if (@c) {
-        warn "Cycle found: '" . join("' -> '", @c) . "'\n";
-      }
-    }
-    die $@;
-  }
-
-  return @rv;
+  return $self->toposort_graph(@_)->toposort();
 }
 
 1;
@@ -70,7 +56,16 @@ DBIx::Class::TopoSort - The addition of topological sorting to DBIx::Class
 
 =head1 SYNOPSIS
 
-Within your schema class:
+Without using TopoSort as a component:
+
+  my @toposorted_sourcenames = DBIx::Class::TopoSort->toposort($schema);
+
+  my @toposorted_sourcenames = DBIx::Class::TopoSort->toposort($schema, skip => {
+          Artist => [qw/ first_album /],
+  });
+
+
+Alternately, as a component - within your schema class:
 
   __PACKAGE__->load_components('TopoSort');
 
@@ -89,8 +84,9 @@ If you have a cycle in your relationships
 
 =head1 DESCRIPTION
 
-This adds a method to L<DBIx::Class::Schema> which returns the full list of
-sources (similar to L<DBIx::Class::Schema/sources>) in topological-sorted order.
+This adds the ability to return the list of sources (similar to
+L<DBIx::Class::Schema/sources>) in topological-sorted order. This can be used
+either as a component or as an independent method.
 
 =head2 TOPOLOGICAL SORT
 
@@ -100,11 +96,11 @@ relationship to.
 
 =head1 METHODS
 
-This class is not instantiable nor does it provide any methods of its own. All
-methods are added to the L<DBIx::Class::Schema> class and are callable on
-objects instantiated of that class.
+Both methods may be used either as class methods of TopoSort or as methods of
+the schema (when TopoSort is loaded as a component). This class is not
+instantiable.
 
-=head2 toposort
+=head2 toposort($schema?, %opts?)
 
 This is sugar for:
 
@@ -117,7 +113,7 @@ section on TOPOLOGICAL SORT.
 This method will throw an error if there are any cycles in your tables. You will
 need to specify the skip parameter (described below) to break those cycles.
 
-=head2 toposort_graph
+=head2 toposort_graph($schema?, %opts?)
 
 This returns a L<Graph> object with a vertex for every source and an edge for
 every foreign key relationship.
@@ -144,7 +140,7 @@ names.
 
 L<Graph/toposort>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 =over 4
 

@@ -36,7 +36,14 @@ BEGIN {
 
 use Test::DBIx::Class qw(:resultsets);
 
-my @tables = Schema->toposort();
-cmp_bag( [@tables], ['Artist', 'Track'], "Unconnected tables are returned in any order" );
+{
+  my @tables = Schema->toposort();
+  cmp_bag( [@tables], ['Artist', 'Track'], "Unconnected tables are returned in any order" );
+}
+
+{
+  my @tables = DBIx::Class::TopoSort->toposort(Schema);
+  cmp_bag( [@tables], ['Artist', 'Track'], "Unconnected tables are returned in any order" );
+}
 
 done_testing;
