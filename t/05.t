@@ -75,38 +75,19 @@ sub is_before {
     return $f < $s;
 }
 
-{
-  my @tables = Schema->toposort();
+my @tables = Schema->toposort();
 
-  ok(
-      is_before(\@tables, 'Artist', 'Album'),
-      "Artist is before Album",
-  );
-  ok(
-      is_before(\@tables, 'Studio', 'Album'),
-      "Studio is before Album",
-  );
-  ok(
-      is_before(\@tables, 'Album', 'Track'),
-      "Album is before Track",
-  );
-}
-
-{
-  my @tables = DBIx::Class::TopoSort->toposort(Schema);
-
-  ok(
-      is_before(\@tables, 'Artist', 'Album'),
-      "Artist is before Album",
-  );
-  ok(
-      is_before(\@tables, 'Studio', 'Album'),
-      "Studio is before Album",
-  );
-  ok(
-      is_before(\@tables, 'Album', 'Track'),
-      "Album is before Track",
-  );
-}
+ok(
+    is_before(\@tables, 'Artist', 'Album'),
+    "Artist is before Album",
+);
+ok(
+    is_before(\@tables, 'Studio', 'Album'),
+    "Studio is before Album",
+);
+ok(
+    is_before(\@tables, 'Album', 'Track'),
+    "Album is before Track",
+);
 
 done_testing;

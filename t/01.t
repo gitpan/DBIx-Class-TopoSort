@@ -25,14 +25,7 @@ BEGIN {
 
 use Test::DBIx::Class qw(:resultsets);
 
-{
-  my @tables = Schema->toposort();
-  cmp_deeply( [@tables], ['Artist'], "One table toposort is just the table" );
-}
-
-{
-  my @tables = DBIx::Class::TopoSort->toposort(Schema);
-  cmp_deeply( [@tables], ['Artist'], "One table toposort is just the table" );
-}
+my @tables = Schema->toposort();
+cmp_deeply( [@tables], ['Artist'], "One table toposort is just the table" );
 
 done_testing;

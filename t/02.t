@@ -30,20 +30,13 @@ BEGIN {
         use base 'DBIx::Class::Schema';
         __PACKAGE__->register_class(Artist => 'MyApp::Schema::Result::Artist');
         __PACKAGE__->register_class(Track => 'MyApp::Schema::Result::Track');
-        __PACKAGE__->load_components('TopoSort');
     }
 }
 
+use DBIx::Class::TopoSort;
 use Test::DBIx::Class qw(:resultsets);
 
-{
-  my @tables = Schema->toposort();
-  cmp_bag( [@tables], ['Artist', 'Track'], "Unconnected tables are returned in any order" );
-}
-
-{
-  my @tables = DBIx::Class::TopoSort->toposort(Schema);
-  cmp_bag( [@tables], ['Artist', 'Track'], "Unconnected tables are returned in any order" );
-}
+my @tables = DBIx::Class::TopoSort->toposort(Schema);
+cmp_bag( [@tables], ['Artist', 'Track'], "Unconnected tables are returned in any order" );
 
 done_testing;

@@ -47,20 +47,10 @@ sub is_before {
     return $f < $s;
 }
 
-{
-  my @tables = Schema->toposort();
-  ok(
-      is_before(\@tables, 'Artist', 'Album'),
-      "Connected tables are returned in has_many order",
-  );
-}
-
-{
-  my @tables = DBIx::Class::TopoSort->toposort(Schema);
-  ok(
-      is_before(\@tables, 'Artist', 'Album'),
-      "Connected tables are returned in has_many order",
-  );
-}
+my @tables = Schema->toposort();
+ok(
+    is_before(\@tables, 'Artist', 'Album'),
+    "Connected tables are returned in has_many order",
+);
 
 done_testing;

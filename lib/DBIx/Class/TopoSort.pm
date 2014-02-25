@@ -1,50 +1,56 @@
 package DBIx::Class::TopoSort;
-#vi:sw=2
 
 use 5.008_004;
 
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.050000';
+our $VERSION = '0.040001';
 
 use Graph;
 
 sub toposort_graph {
-  my $self = shift;
-  my ($schema, %opts) = ref($self) ? ($self, @_) : @_;
+    my $self = shift;
+    my ($schema, %opts) = @_;
 
-  my $g = Graph->new;
+    my $g = Graph->new;
 
-  my @source_names = $schema->sources;
+    my @source_names = $schema->sources;
 
-  my %table_source = map { 
-    $schema->source($_)->name => $_
-  } @source_names;
+    my %table_source = map { 
+        $schema->source($_)->name => $_
+    } @source_names;
 
-  foreach my $name ( @source_names ) {
-    my $source = $schema->source($name);
-    $g->add_vertex($name);
+    foreach my $name ( @source_names ) {
+        my $source = $schema->source($name);
+        $g->add_vertex($name);
 
-    foreach my $rel_name ( $source->relationships ) {
-      next if grep { $_ eq $rel_name } @{$opts{skip}{$name}};
-      my $rel_info = $source->relationship_info($rel_name);
+        foreach my $rel_name ( $source->relationships ) {
+            next if grep { $_ eq $rel_name } @{$opts{skip}{$name}};
+            my $rel_info = $source->relationship_info($rel_name);
 
-      if ( $rel_info->{attrs}{is_foreign_key_constraint} ) {
-        $g->add_edge(
-          $table_source{$schema->source($rel_info->{source})->name},
-          $name,
-        );
-      }
+            if ( $rel_info->{attrs}{is_foreign_key_constraint} ) {
+                $g->add_edge(
+                    $table_source{$schema->source($rel_info->{source})->name},
+                    $name,
+                );
+            }
+        }
     }
-  }
 
-  return $g;
+    return $g;
 }
 
 sub toposort {
-  my $self = shift;
-  return $self->toposort_graph(@_)->toposort();
+    my $self = shift;
+    my $schema;
+    if (ref($self) && $self->isa('DBIx::Class::Schema')) {
+        $schema = $self;
+    }
+    else {
+        $schema = shift(@_);
+    }
+    return $self->toposort_graph($schema, @_)->toposort();
 }
 
 1;
@@ -56,16 +62,7 @@ DBIx::Class::TopoSort - The addition of topological sorting to DBIx::Class
 
 =head1 SYNOPSIS
 
-Without using TopoSort as a component:
-
-  my @toposorted_sourcenames = DBIx::Class::TopoSort->toposort($schema);
-
-  my @toposorted_sourcenames = DBIx::Class::TopoSort->toposort($schema, skip => {
-          Artist => [qw/ first_album /],
-  });
-
-
-Alternately, as a component - within your schema class:
+Within your schema class:
 
   __PACKAGE__->load_components('TopoSort');
 
@@ -82,11 +79,14 @@ If you have a cycle in your relationships
       },
   );
 
+Alternately:
+
+  my @toposorted_sourcenames = DBIx::Class::TopoSort->toposort($schema);
+
 =head1 DESCRIPTION
 
-This adds the ability to return the list of sources (similar to
-L<DBIx::Class::Schema/sources>) in topological-sorted order. This can be used
-either as a component or as an independent method.
+This adds a method to L<DBIx::Class::Schema> which returns the full list of
+sources (similar to L<DBIx::Class::Schema/sources>) in topological-sorted order.
 
 =head2 TOPOLOGICAL SORT
 
@@ -96,11 +96,11 @@ relationship to.
 
 =head1 METHODS
 
-Both methods may be used either as class methods of TopoSort or as methods of
-the schema (when TopoSort is loaded as a component). This class is not
-instantiable.
+This class is not instantiable nor does it provide any methods of its own. All
+methods are added to the L<DBIx::Class::Schema> class and are callable on
+objects instantiated of that class.
 
-=head2 toposort($schema?, %opts?)
+=head2 toposort
 
 This is sugar for:
 
@@ -113,7 +113,16 @@ section on TOPOLOGICAL SORT.
 This method will throw an error if there are any cycles in your tables. You will
 need to specify the skip parameter (described below) to break those cycles.
 
-=head2 toposort_graph($schema?, %opts?)
+=head2 toposort (Class method)
+
+Alternately, if you do not wish to use TopoSort as a component, you can call it
+as a class method on this class. The toposort() method is smart enough to
+distinguish.
+
+Note: toposort_graph() does B<not> distinguish - it assumes it will be called
+with the C<$schema> object passed in.
+
+=head2 toposort_graph
 
 This returns a L<Graph> object with a vertex for every source and an edge for
 every foreign key relationship.
@@ -140,7 +149,7 @@ names.
 
 L<Graph/toposort>
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 =over 4
 
