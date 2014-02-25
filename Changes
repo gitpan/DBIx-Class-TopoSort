@@ -1,5 +1,8 @@
 Revision history for DBIx::Class::TopoSort (ordered by revision number).
 
+0.050001 Feb 25 2014 09:15:00 PDT
+    - Zero changes to increment version number
+
 0.040001 Feb 25 2014 09:00:00 PDT
     - Converted to use proper version numbers
     - Allow the toposort method to be called as a class method of TopoSort
