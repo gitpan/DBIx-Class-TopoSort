@@ -23,6 +23,7 @@ test_requires 'Test::DBIx::Class' => '0.01';
 test_requires 'Test::More'        => '0.88'; # done_testing
 test_requires 'Test::Deep'        => '0.01';
 test_requires 'List::MoreUtils'   => '0.01'; # first_index
+test_requires 'YAML::XS'          => '0.01'; # Force a usable YAML parser
  
 tests_recursive;
 

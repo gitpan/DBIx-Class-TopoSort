@@ -9,6 +9,7 @@ build_requires:
   Test::Deep: 0.01
   Test::Exception: 0.21
   Test::More: 0.88
+  YAML::XS: 0.01
 configure_requires:
   ExtUtils::MakeMaker: 6.59
 distribution_type: module
@@ -35,4 +36,4 @@ resources:
   homepage: http://search.cpan.org/perldoc?DBIx%3A%3AClass%3A%3ATopoSort
   license: http://dev.perl.org/licenses/
   repository: https://github.com/robkinyon/dbix-class-toposort
-version: 0.050001
+version: 0.050002
